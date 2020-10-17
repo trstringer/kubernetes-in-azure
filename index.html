@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Getting Started with Kubernetes in Azure</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
@@ -18,20 +18,123 @@
 			<div class="slides">
 				<section data-markdown>
                     <textarea data-template>
-                        #### Getting Started with Kubernetes in Azure
+                        ## Getting Started with Kubernetes in Azure
                         </br>Thomas Stringer</br>
                         *Software Engineer, Microsoft*
+                        </br>
+                        https://trstringer.com
                     </textarea>
                 </section>
                 <section data-markdown>
                     <textarea data-template>
-                        #### What we will cover
-                        * First thing
-                        * Second thing
-                        * Third thing
+                        ## Who am I?
+
+                        * Software engineer at Microsoft
+                            * Linux on Azure
+                            * DevOps tooling development
+                            * Kubernetes
+                        * Open source user and contributor
+                        * New Hampshire (Seacoast)
+                        * Surf, snowboard, mountain bike
                     </textarea>
                 </section>
-				<section>Slide 2</section>
+                <section data-markdown>
+                    <textarea data-template>
+                        ## Topics
+
+                        * Cluster creation
+                        * Container registry
+                        * Security basics
+                        * Logging
+                        * Storage
+                        * Management/maintenance/admin
+                        * DevOps
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Cluster creation
+
+                        Avoid the GUI and create it with code
+
+                        * Azure CLI
+                        * Infrastructure-as-Code (e.g. Terraform)
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Cluster creation - Azure CLI
+
+                        #### Noteworthy parameters
+
+                        * `--kubernetes-version`<sup>1</sup>
+                        * `--node-count`
+                        * `--node-vm-size`
+                        * `--service-principal`<sup>2</sup>
+                        </br>
+                        </br>
+                        1. *Discover with `az aks get-versions`*
+                        2. *Auto-created*
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Cluster creation - Example
+
+                        ```bash
+                        $ az group create --name my-rg --location eastus
+
+                        $ az aks create \
+                            --resource-group my-rg \
+                            --name my-aks \
+                            --node-count 2
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Cluster creation - Connect
+
+                        Now that the cluster is created, you want to connect to it with **`kubectl`**.
+
+                        ```bash
+                        $ az aks get-credentials \
+                            --resource-group my-rg \
+                            --name my-aks \
+                            --overwrite-existing
+
+                        $ kubectl get nodes
+                        NAME              STATUS   ROLES   AGE    VERSION
+                        aks-nodepool1-1   Ready    agent   13m    v1.17.11
+                        aks-nodepool1-2   Ready    agent   13m    v1.17.11
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Node pools
+
+                        * **Divide** your application workload into multiple **compute groups**
+                        * Node pool VMs share the same configuration
+                        * Default single node pool (*system node pool*)
+                        * Allow **rolling cluster upgrades**
+                            * Control plane upgrade: **az aks upgrade --control-plane-only**
+                            * Node pool upgrade: **az aks nodepool upgrade**
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Node pools
+
+                        ![diagram](./images/node_pools.png)
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Questions?
+                        ## Thank you!
+                    </textarea>
+                </section>
 			</div>
 		</div>
 
