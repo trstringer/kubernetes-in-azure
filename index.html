@@ -42,13 +42,27 @@
                     <textarea data-template>
                         ## Topics
 
+                        * AKS overview
                         * Cluster creation
                         * Container registry
+                        * Application deployment
                         * Security basics
                         * Logging
                         * Storage
                         * Management/maintenance/admin
                         * DevOps
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## AKS overview
+
+                        * **A**zure **K**ubernetes **S**ervice
+                        * Managed Kubernetes
+                        * No cost for the control plane
+                        * Kubernetes... **the *easy* way**
+
+                        ![Control plane and nodes](./images/control-plane-and-nodes.png)
                     </textarea>
                 </section>
 				<section data-markdown>
@@ -95,7 +109,7 @@
                     <textarea data-template>
                         ## Cluster creation - Connect
 
-                        Now that the cluster is created, you want to connect to it with **`kubectl`**.
+                        Now that the cluster is created, you want to connect to it with **`kubectl`**:
 
                         ```bash
                         $ az aks get-credentials \
@@ -133,7 +147,111 @@
                     <textarea data-template>
                         ## Container registry
 
-                        * Integrate your Kubernetes cluster with Azure Container Registry (ACR)
+                        * Integrate your Kubernetes cluster with Azure Container Registry (ACR) for an easy, secure, and reliable container registry
+                        * Link your existing AKS cluster up with a new container registry:
+
+                        ```bash
+                        $ az acr create \
+                            --resource-group my-rg \
+                            --name my-acr \
+                            --sku basic
+
+                        $ az aks update \
+                            --resource-group my-rg \
+                            --name my-aks \
+                            --attach-acr my-acr
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Application deployment - Create the application
+
+                        **script.sh**
+
+                        ```bash
+                        #!/bin/bash
+
+                        while true; do
+                            echo "current date: $(date)"
+                            sleep 5
+                        done
+                        ```
+
+                        **Dockerfile**
+
+                        ```dockerfile
+                        FROM debian:latest
+                        ADD script.sh /opt
+                        CMD ["/opt/script.sh"]
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Application deployment - Build and push
+
+                        **Build the image**
+
+                        ```text
+                        $ docker build -t my-acr.azurecr.io/test-script:latest
+                        ```
+
+                        **Push the image to the container registry**
+
+                        ```text
+                        $ az acr login \
+                            --resource-group my-rg \
+                            --name my-acr
+
+                        $ docker push my-acr.azurecr.io/test-script:latest
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Application deployment - Deploy
+
+                        **pod.yaml**
+
+                        ```yaml
+                        kind: Pod
+                        apiVersion: v1
+                        metadata:
+                          name: test-script
+                        spec:
+                          containers:
+                            - name: test-script
+                              image: thstringacr1.azurecr.io/test-script:latest
+                        ```
+
+                        **Deploy the pod manifest to the cluster**
+
+                        ```text
+                        $ kubectl apply -f ./pod.yaml
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Application deployment - Validation
+
+                        **Show the deployed pod**
+
+                        ```text
+                        $ kubectl get pod test-script
+                        NAME          READY   STATUS    RESTARTS   AGE
+                        test-script   1/1     Running   0          27m
+                        ```
+
+                        **Display pod logs**
+
+                        ```text
+                        $ kubectl logs test-script
+                        current date: Sun Oct 18 21:11:56 UTC 2020
+                        current date: Sun Oct 18 21:12:01 UTC 2020
+                        current date: Sun Oct 18 21:12:06 UTC 2020
+                        ```
                     </textarea>
                 </section>
 				<section data-markdown>
