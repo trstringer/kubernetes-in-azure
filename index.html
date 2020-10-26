@@ -314,6 +314,91 @@
                 </section>
 				<section data-markdown>
                     <textarea data-template>
+                        ## Security - AAD Pod Identity
+
+                        * Authenticate *from* your Kubernetes applications *to* Azure resources
+                        * Azure Managed Service Identity (MSI)
+                            * No password
+                            * Minimal management
+                        * Target Azure resources that support Azure AD authentication
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Security - AAD Pod Identity - Setup
+
+                        ```
+                        # 1. Install aad-pod-identity
+                        $ kubectl apply \
+                            -f https://raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml
+
+                        # 2. Create the MSI (identity) in the node resource group
+                        $ az identity create \
+                            --name <name> \
+                            --resource-group $(az aks show \
+                                --name <aks> \
+                                --resource-group <rg> \
+                                --query "nodeResourceGroup" -o tsv)
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Security - AAD Pod Identity - Setup
+
+                        **azure_identity.yaml**
+
+                        ```yaml
+                        apiVersion: "aadpodidentity.k8s.io/v1"
+                        kind: AzureIdentity
+                        metadata:
+                          name: az-identity
+                        spec:
+                          type: 0
+                          ResourceID: <id_from_identity>
+                          ClientID: <client_id_from_identity>
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        $$ Security - AAD Pod Identity - Setup
+
+                        **azure_identity_binding.yaml**
+
+                        ```yaml
+                        apiVersion: "aadpodidentity.k8s.io/v1"
+                        kind: AzureIdentityBinding
+                        metadata:
+                          name: az-identity-binding
+                        spec:
+                          AzureIdentity: az-identity
+                          Selector: aaadpi
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Security - AAD Pod Identity - Setup
+
+                        **pod.yaml**
+
+                        ```yaml
+                        apiVersion: v1
+                        kind: Pod
+                        metadata:
+                          name: aadtest1
+                          labels:
+                            aadpodidbinding: aaadpi
+                        spec:
+                          containers:
+                            - name: aadtest1
+                              image: <image_id>
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
                         ## Questions?
                         ## Thank you!
 
