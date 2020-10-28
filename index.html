@@ -274,7 +274,7 @@
                         # 2. Assign cluster admins
                         $ az role assignment create \
                             --role "Azure Kubernetes Service RBAC Cluster Admin" \
-                            --assignee ... --scope <aks_id>
+                            --assignee ... --scope aks_id
                         ```
                     </textarea>
                 </section>
@@ -289,12 +289,12 @@
                         # 4. Assign AKS namespace permissions to new AAD group
                         $ az role assignment create \
                             --role "Azure Kubernetes Service RBAC Writer" \
-                            --assignee ... --scope <aks_id>/namespaces/<namespace>
+                            --assignee ... --scope aks_id/namespaces/namespace
 
                         # 5. Give kubectl permissions to new AAD group
                         $ az role assignment create \
                             --role "Azure Kubernetes Service Cluster User Role" \
-                            --assignee ... --scope <aks_id>
+                            --assignee ... --scope aks_id
                         ```
                     </textarea>
                 </section>
@@ -308,7 +308,7 @@
 
                         # 7. The new user can now login with kubectl
                         $ az aks get-credentials ...
-                        $ kubectl get po -n <namespace>...
+                        $ kubectl get po -n namespace...
                         ```
                     </textarea>
                 </section>
@@ -334,10 +334,10 @@
 
                         # 2. Create the MSI (identity) in the node resource group
                         $ az identity create \
-                            --name <name> \
+                            --name name \
                             --resource-group $(az aks show \
-                                --name <aks> \
-                                --resource-group <rg> \
+                                --name aks \
+                                --resource-group rg \
                                 --query "nodeResourceGroup" -o tsv)
                         ```
                     </textarea>
@@ -355,14 +355,14 @@
                           name: az-identity
                         spec:
                           type: 0
-                          ResourceID: <id_from_identity>
-                          ClientID: <client_id_from_identity>
+                          ResourceID: id_from_identity
+                          ClientID: client_id_from_identity
                         ```
                     </textarea>
                 </section>
 				<section data-markdown>
                     <textarea data-template>
-                        $$ Security - AAD Pod Identity - Setup
+                        ## Security - AAD Pod Identity - Setup
 
                         **azure_identity_binding.yaml**
 
@@ -393,7 +393,7 @@
                         spec:
                           containers:
                             - name: aadtest1
-                              image: <image_id>
+                              image: image_id
                         ```
                     </textarea>
                 </section>
