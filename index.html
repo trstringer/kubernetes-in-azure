@@ -399,6 +399,31 @@
                 </section>
 				<section data-markdown>
                     <textarea data-template>
+                        ## Logging - Azure
+
+                        * Native logging in Azure
+                            * Azure Monitor
+                            * Log Analytics workspace
+                            * Kusto query language
+                        * Single monitoring experience for platform logs as well
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Logging - Azure - Setup
+
+                        ```
+                        $ az provider register \
+                            --namespace "Microsoft.OperationsManagement"
+                        $ az provider register \
+                            --namespace "Microsoft.OperationalInsights"
+
+                        $ az aks create --enable-addons monitoring ...
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
                         ## Questions?
                         ## Thank you!
 
