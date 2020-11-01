@@ -410,6 +410,13 @@
                 </section>
 				<section data-markdown>
                     <textarea data-template>
+                        ## Logging - Azure
+
+                        ![Logging diagram](./images/aks-logging1.png)
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
                         ## Logging - Azure - Setup
 
                         ```
@@ -418,8 +425,40 @@
                         $ az provider register \
                             --namespace "Microsoft.OperationalInsights"
 
-                        $ az aks create --enable-addons monitoring ...
+                        $ az aks create \
+                            --enable-addons monitoring \
+                            --workspace-resource-id workspace_id \
+                            ...
                         ```
+
+                        *And that's it!*
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Logging - Azure - Querying
+
+                        * [Azure Data Explorer web UI](https://dataexplorer.azure.com)
+                        * Kusto query language (KQL)
+
+                        ![Output sample](./images/aks-logging3.png)
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Logging - Azure - Querying
+
+                        ```text
+                        ContainerLog
+                        | join kind = inner (KubePodInventory
+                            | project ContainerID, PodName=Name, ControllerKind, ControllerName, Namespace
+                            | distinct *
+                        ) on ContainerID
+                        | project TimeGenerated, Namespace, PodName, LogEntry, ControllerKind, ControllerName
+                        | sort by TimeGenerated desc
+                        ```
+
+                        ![Output sample](./images/aks-logging2.png)
                     </textarea>
                 </section>
 				<section data-markdown>
