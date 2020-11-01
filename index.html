@@ -463,6 +463,50 @@
                 </section>
 				<section data-markdown>
                     <textarea data-template>
+                        ## Storage - Azure Storage
+
+                        * Persist across deployments
+                        * Multiple pod access
+                        * Two provisioners available
+                            * **Azure Disk** - [un]managed disk
+                            * **Azure File** - storage account SMB share
+                        * Four built-in StorageClass objects
+
+                        ```text
+                        NAME                PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+                        azurefile           kubernetes.io/azure-file   Delete          Immediate           true                   9m14s
+                        azurefile-premium   kubernetes.io/azure-file   Delete          Immediate           true                   9m14s
+                        default (default)   kubernetes.io/azure-disk   Delete          Immediate           true                   9m14s
+                        managed-premium     kubernetes.io/azure-disk   Delete          Immediate           true                   9m14s
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Storage - StorageClass parameters
+
+                        * **Provisioner** (Azure Disk or Azure File)
+                        * **Reclaim policy** (Delete or Retain)
+                        * **Volume binding mode** (Immediate or WaitForFirstConsumer)
+                        * Azure Disk **parameters**
+                            * storageaccounttype, kind, resourcegroup
+                        * Azure File **parameters**
+                            * skuName, location, storageAccount, etc
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Storage - Custom StorageClass
+
+                        * *Create your own!*
+                        * Editing default StorageClass objects will be overwritten
+                        * Customize based off of your storage requirements
+                        * Kubernetes resources
+                            * Example: `$ kubectl get sc azurefile -o yaml`
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
                         ## Questions?
                         ## Thank you!
 
