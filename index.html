@@ -404,7 +404,7 @@
                         * Native logging in Azure
                             * Azure Monitor
                             * Log Analytics workspace
-                            * Kusto query language
+                            * Kusto query language (KQL)
                         * Single monitoring experience for platform logs as well
                     </textarea>
                 </section>
@@ -479,14 +479,124 @@
 				<section data-markdown>
                     <textarea data-template>
                         ## Metrics - Custom
+
+                        ![Custom metrics](./images/metrics-custom1.png)
                     </textarea>
                 </section>
 				<section data-markdown>
                     <textarea data-template>
-                        ## Questions?
-                        ## Thank you!
+                        ## Metrics - Walkthrough
 
-                        Email/linkedin/etc
+                        Create an **NGINX pod** and **scrape custom metrics** from it. Then **query** and **analyze** custom NGINX metrics.
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Metrics - Walkthrough
+
+                        * Create an AKS cluster with `monitoring` enabled
+                        * Download config template: [https://aka.ms/container-azm-ms-agentconfig](https://aka.ms/container-azm-ms-agentconfig)
+                        * The `ConfigMap` is heavily commented for explanations
+                        * Modify the `ConfigMap` for your requirements
+                            * `monitor_kubernetes_pods = true`
+                        * Apply the config: `kubectl apply -f config.yaml`
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Metrics - Walkthrough
+
+                        **nginx-conf.yaml**
+
+                        ```yaml
+                        apiVersion: v1
+                        kind: ConfigMap
+                        metadata:
+                          name: nginx-conf
+                        data:
+                          default.conf: |
+                            server {
+                                ...
+                                location /status {
+                                    stub_status;
+                                    allow 127.0.0.1;
+                                    deny all;
+                                }
+                                ...
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Metrics - Walkthrough
+
+                        **deployment.yaml**
+
+                        ```yaml
+                          template:
+                            metadata:
+                              annotations:
+                                prometheus.io/scrape: "true"
+                                prometheus.io/port: "9113"
+                            spec:
+                              containers:
+                                - name: nginx
+                                  image: nginx:latest
+                                - name: exporter
+                                  image: nginx/nginx-prometheus-exporter:latest
+                                  args: ["-nginx.scrape-uri", "http://localhost:80/status"]
+                        ```
+
+                        *Sections removed for brevity*
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Metrics - Walkthrough
+
+                        Query all provided Prometheus/custom metrics from Azure Data Explorer
+
+                        ![Metrics query](./images/metrics-custom2.png)
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Metrics - Walkthrough
+
+                        Create a query (KQL) to chart connections
+
+                        ```text
+                        InsightsMetrics
+                        | where TimeGenerated > ago(35m)
+                        | where Namespace == "prometheus"
+                        | where Name == "nginx_connections_handled"
+                        | summarize TotalConnections = sum(Val) by TimeGenerated, Name
+                        | sort by TimeGenerated asc
+                        | extend PreviousConnections = prev(TotalConnections, 1, 0)
+                        | extend NewConnections = TotalConnections - PreviousConnections
+                        | where TimeGenerated > ago(30m)
+                        | project TimeGenerated, NewConnections
+                        | sort by TimeGenerated desc
+                        | render linechart 
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Metrics - Walkthrough
+
+                        Resulting line chart from KQL query
+
+                        ![Chart metrics](./images/aks-metrics1.png)
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
+                        ## Metrics - Walkthrough
+
+                        * Generate alerts from metrics
+                        * Create your own exporters for your applications
+                        * Chart your metrics on dashboards
                     </textarea>
                 </section>
 				<section data-markdown>
