@@ -83,6 +83,20 @@
                 </section>
 				<section data-markdown>
                     <textarea data-template>
+                        ## Cluster creation - Example
+
+                        ```bash
+                        $ az group create --name rg --location eastus
+
+                        $ az aks create \
+                            --resource-group rg \
+                            --name aks \
+                            --node-count 2
+                        ```
+                    </textarea>
+                </section>
+				<section data-markdown>
+                    <textarea data-template>
                         ## Cluster creation - Azure CLI
 
                         #### Noteworthy parameters
@@ -95,20 +109,6 @@
                         </br>
                         1. *Discover with `az aks get-versions`*
                         2. *Auto-created*
-                    </textarea>
-                </section>
-				<section data-markdown>
-                    <textarea data-template>
-                        ## Cluster creation - Example
-
-                        ```bash
-                        $ az group create --name rg --location eastus
-
-                        $ az aks create \
-                            --resource-group rg \
-                            --name aks \
-                            --node-count 2
-                        ```
                     </textarea>
                 </section>
 				<section data-markdown>
