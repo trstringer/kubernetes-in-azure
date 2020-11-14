@@ -22,7 +22,7 @@
                         </br>Thomas Stringer</br>
                         *Software Engineer, Microsoft*
                         </br>
-                        https://trstringer.com
+                        [trstringer.com](https://trstringer.com)
                     </textarea>
                 </section>
                 <section data-markdown>
@@ -35,7 +35,7 @@
                             * Kubernetes
                         * Open source user and contributor
                         * New Hampshire (Seacoast)
-                        * Surf, snowboard, mountain bike
+                        * Surf, snowboard, piano
                     </textarea>
                 </section>
                 <section data-markdown>
@@ -69,15 +69,13 @@
                         * Managed Kubernetes
                         * No cost for the control plane
                         * Kubernetes... **the *easy* way**
-
-                        ![Control plane and nodes](./images/control-plane-and-nodes.png)
                     </textarea>
                 </section>
 				<section data-markdown>
                     <textarea data-template>
                         ## Cluster creation
 
-                        Avoid the GUI and create it with code
+                        *Avoid the GUI and create it with code!*
 
                         * Azure CLI
                         * Infrastructure-as-Code (e.g. Terraform)
@@ -104,11 +102,11 @@
                         ## Cluster creation - Example
 
                         ```bash
-                        $ az group create --name my-rg --location eastus
+                        $ az group create --name rg --location eastus
 
                         $ az aks create \
-                            --resource-group my-rg \
-                            --name my-aks \
+                            --resource-group rg \
+                            --name aks \
                             --node-count 2
                         ```
                     </textarea>
@@ -121,8 +119,8 @@
 
                         ```bash
                         $ az aks get-credentials \
-                            --resource-group my-rg \
-                            --name my-aks \
+                            --resource-group rg \
+                            --name aks \
                             --overwrite-existing
 
                         $ kubectl get nodes
@@ -138,6 +136,7 @@
 
                         * **Divide** your application workload into multiple **compute groups**
                         * Node pool VMs share the same configuration
+                            * Target pods to particular VM types
                         * Default single node pool (*system node pool*)
                         * Allow **rolling cluster upgrades**
                             * Control plane upgrade: **az aks upgrade --control-plane-only**
@@ -148,7 +147,7 @@
                     <textarea data-template>
                         ## Node pools
 
-                        ![diagram](./images/node_pools.png)
+                        ![diagram](./images/node_pools_scheduling.png)
                     </textarea>
                 </section>
 				<section data-markdown>
@@ -160,14 +159,14 @@
 
                         ```bash
                         $ az acr create \
-                            --resource-group my-rg \
-                            --name my-acr \
+                            --resource-group rg \
+                            --name acr \
                             --sku basic
 
                         $ az aks update \
-                            --resource-group my-rg \
-                            --name my-aks \
-                            --attach-acr my-acr
+                            --resource-group rg \
+                            --name aks \
+                            --attach-acr acr
                         ```
                     </textarea>
                 </section>
@@ -202,17 +201,17 @@
                         **Build the image**
 
                         ```text
-                        $ docker build -t my-acr.azurecr.io/test-script:latest
+                        $ docker build -t acr.azurecr.io/test-script:latest
                         ```
 
                         **Push the image to the container registry**
 
                         ```text
                         $ az acr login \
-                            --resource-group my-rg \
-                            --name my-acr
+                            --resource-group rg \
+                            --name acr
 
-                        $ docker push my-acr.azurecr.io/test-script:latest
+                        $ docker push acr.azurecr.io/test-script:latest
                         ```
                     </textarea>
                 </section>
@@ -230,7 +229,7 @@
                         spec:
                           containers:
                             - name: test-script
-                              image: thstringacr1.azurecr.io/test-script:latest
+                              image: acr.azurecr.io/test-script:latest
                         ```
 
                         **Deploy the pod manifest to the cluster**
@@ -381,7 +380,7 @@
                           name: az-identity-binding
                         spec:
                           AzureIdentity: az-identity
-                          Selector: aaadpi
+                          Selector: podid
                         ```
                     </textarea>
                 </section>
@@ -397,7 +396,7 @@
                         metadata:
                           name: aadtest1
                           labels:
-                            aadpodidbinding: aaadpi
+                            aadpodidbinding: podid
                         spec:
                           containers:
                             - name: aadtest1
@@ -409,7 +408,7 @@
                     <textarea data-template>
                         ## Logging - Azure
 
-                        * Native logging in Azure
+                        * Logging in Azure
                             * Azure Monitor
                             * Log Analytics workspace
                             * Kusto query language (KQL)
